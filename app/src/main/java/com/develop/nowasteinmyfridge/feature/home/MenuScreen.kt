@@ -31,15 +31,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.develop.nowasteinmyfridge.R
 import com.develop.nowasteinmyfridge.ui.theme.White
 
 @Composable
-fun DisplayIngredients(ingredients: String) {
-    val formattedIngredients = ingredients.split(",")
+fun DisplayIngredients(ingredients: List<String>) {
+    val formattedIngredients = ingredients
         .joinToString(separator = "\n • ", prefix = " • ") {
             it.trim()
         }
@@ -94,7 +96,7 @@ fun OvalIconView(icon: ImageVector, text: String) {
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MenuScreen(name: String?, image: String?, ingredients: List<String>?) {
+fun MenuScreen(name: String?, image: String?, ingredientList: List<String>) {
     Scaffold {
         Column(
             modifier = Modifier
@@ -168,7 +170,7 @@ fun MenuScreen(name: String?, image: String?, ingredients: List<String>?) {
                             modifier = Modifier.fillMaxSize(),
                         ) {
                             Text(
-                                text = "ingredients",
+                                text = stringResource(id = R.string.ingredient),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold,
                             )
@@ -176,7 +178,7 @@ fun MenuScreen(name: String?, image: String?, ingredients: List<String>?) {
                                 modifier = Modifier.height(200.dp)
                             ) {
                                 item {
-                                    DisplayIngredients(ingredients.toString())
+                                    DisplayIngredients(ingredientList)
                                 }
                             }
                         }

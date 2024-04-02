@@ -116,6 +116,7 @@ fun HomeScreen(
     val recipesState by homeViewModel.recipesState
     val hits = recipesState.hits
 
+
     Column {
         Box(
             modifier = Modifier
@@ -200,12 +201,16 @@ fun HomeScreen(
                             } else {
                                 val recipeNames = hits.map { it.recipe.label }
                                 val recipeImages = hits.map { it.recipe.image }
-                                val ingredientLines = hits.flatMap { it.recipe.ingredientLines }
+                                val ingredientLinesSent = hits.map { recipeHit ->
+                                    recipeHit.recipe.ingredientLines.let {
+                                        listOfNotNull(it)
+                                    }
+                                }.flatten()
                                 SliderBoxComponentVertical(
                                     names = recipeNames,
                                     images = recipeImages,
-                                    ingredientLines = ingredientLines,
-                                    onItemClick = { name, image, _ ->
+                                    ingredientLines = ingredientLinesSent,
+                                    onItemClick = { name, image, ingredientLines ->
                                         navController.navigate(
                                             "menu/${Uri.encode(name)}/${
                                                 Uri.encode(
@@ -300,9 +305,9 @@ fun SliderBoxComponent(
 fun SliderBoxComponentVertical(
     names: List<String>,
     images: List<String>,
-    ingredientLines:  List<String>,
+    ingredientLines: List<List<String>>,
     modifier: Modifier = Modifier,
-    onItemClick: (String, String, String) -> Unit
+    onItemClick: (String, String, List<String>) -> Unit
 ) {
     var selectedIndex by remember { mutableIntStateOf(0) }
 
