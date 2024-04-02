@@ -1,5 +1,6 @@
 package com.develop.nowasteinmyfridge.data.repository
 
+import android.net.Uri
 import android.util.Log
 import com.develop.nowasteinmyfridge.data.model.GroceryList
 import com.develop.nowasteinmyfridge.data.model.GroceryListCreate
@@ -105,14 +106,14 @@ class FirebaseFirestoreRepositoryImpl @Inject constructor(
     override suspend fun addIngredient(ingredient: IngredientCreate) {
         try {
             val ingredientId = db.collection("users/$userEmail/ingredients").document().id
-            val image = ingredient.image
-            if (image != null) {
-                val ref = storageRef.child("users/$userEmail/ingredients/${image.lastPathSegment}")
-                val uploadTask = ref.putFile(image)
+            val imageUri = ingredient.image as? Uri
+
+            if (imageUri != null) {
+                val ref = storageRef.child("users/$userEmail/ingredients/${imageUri.lastPathSegment}")
+                val uploadTask = ref.putFile(imageUri)
                 try {
                     val taskSnapshot = uploadTask.await()
-                    val imageUrl =
-                        taskSnapshot.metadata!!.reference!!.downloadUrl.await().toString()
+                    val imageUrl = taskSnapshot.metadata!!.reference!!.downloadUrl.await().toString()
                     val newIngredient = Ingredient(
                         id = ingredientId,
                         name = ingredient.name,
@@ -128,11 +129,13 @@ class FirebaseFirestoreRepositoryImpl @Inject constructor(
                 } catch (uploadException: Exception) {
                     Log.e("Error", "Error uploading image: $uploadException")
                 }
-            } else {
+            } else if (ingredient.image is String) { // Handle the case where image is a String
+                // In this case, the image is already a URL, so use it directly
                 val newIngredient = Ingredient(
                     id = ingredientId,
                     name = ingredient.name,
                     quantity = ingredient.quantity,
+                    image = ingredient.image,
                     mfg = ingredient.mfg,
                     efd = ingredient.efd,
                     isInFreezer = ingredient.inFreeze,
@@ -145,7 +148,6 @@ class FirebaseFirestoreRepositoryImpl @Inject constructor(
             Log.d("FirestoreError", "Error adding ingredient to Firestore: $e")
         }
     }
-
 
     override suspend fun getUserInfo(): Flow<Result<UserProfile>> {
         return flow {

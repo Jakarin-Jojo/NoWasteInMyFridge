@@ -42,6 +42,7 @@
     <string name="label_password">Password</string>
     <string name="label_birthday_user_profile">Birthday</string>
     <string name="btn_signup">Sign up</string>
+    <string name="btn_scan_qr">Scan QR</string>
 
     <string name="logout">Log out</string>
     <string name="no_ingredients_available">No ingredients available</string>

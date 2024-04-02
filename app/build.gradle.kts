@@ -58,6 +58,10 @@ android {
 }
 
 dependencies {
+    // scan qrcode zxing
+    implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
+
+
     implementation ("io.coil-kt:coil-compose:2.4.0")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.compose.material:material:1.5.4")
@@ -100,4 +104,7 @@ dependencies {
 
     // read env file
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
+
+    implementation ("com.squareup.okhttp3:okhttp:4.9.2")
+
 }

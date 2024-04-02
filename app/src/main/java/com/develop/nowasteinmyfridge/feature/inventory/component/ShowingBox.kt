@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dangerous
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,6 +24,7 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
@@ -79,7 +81,6 @@ fun ShowingBox(
                     .zIndex(1f)
             )
         }
-
         Image(
             painter = rememberAsyncImagePainter(ingredient.image),
             contentDescription = null,
@@ -87,6 +88,14 @@ fun ShowingBox(
             modifier = Modifier
                 .fillMaxSize()
                 .clip(shape = RoundedCornerShape(10.dp))
+        )
+        Text(
+            text = ingredient.name,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier
+                .padding(top = 6.dp, end = 10.dp, start = 6.dp)
+                .zIndex(1f),
+            color = Color.White,
         )
     }
 }

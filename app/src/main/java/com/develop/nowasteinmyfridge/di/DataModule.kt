@@ -4,6 +4,8 @@ import com.develop.nowasteinmyfridge.data.repository.AuthRepository
 import com.develop.nowasteinmyfridge.data.repository.AuthRepositoryImpl
 import com.develop.nowasteinmyfridge.data.repository.FirebaseFirestoreRepository
 import com.develop.nowasteinmyfridge.data.repository.FirebaseFirestoreRepositoryImpl
+import com.develop.nowasteinmyfridge.data.repository.IngredientByBarcodeRepositoryImpl
+import com.develop.nowasteinmyfridge.data.repository.IngredientByBarCodeRepository
 import com.develop.nowasteinmyfridge.data.repository.RecipeRepository
 import com.develop.nowasteinmyfridge.data.repository.RecipeRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
@@ -43,5 +45,12 @@ object DataModule {
     fun providesRecipeRepository(): RecipeRepository {
         return RecipeRepositoryImpl()
     }
+
+    @Provides
+    @Singleton
+    fun providesGetBarcodeRepository(): IngredientByBarCodeRepository {
+        return IngredientByBarcodeRepositoryImpl()
+    }
+
 
 }
