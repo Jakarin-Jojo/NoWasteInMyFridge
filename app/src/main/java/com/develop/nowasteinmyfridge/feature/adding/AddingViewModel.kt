@@ -46,7 +46,7 @@ class AddingViewModel @Inject constructor(
                 Log.d("AddingViewModel", "Result: $result")
                 val brands = parseBrandsFromResponse(result)
                 _brands.value = brands
-                val imageUrl = result.product.imageUrl
+                val imageUrl = result.product.image_url
                 _imageUrl.value = imageUrl
                 _isFoundProduct.value = result.status
                 _getIngredientByBarcodeResult.value = Result.Success(Unit)
