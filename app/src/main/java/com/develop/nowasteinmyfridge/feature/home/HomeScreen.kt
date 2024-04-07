@@ -116,7 +116,6 @@ fun HomeScreen(
     val recipesState by homeViewModel.recipesState
     val hits = recipesState.hits
 
-
     Column {
         Box(
             modifier = Modifier

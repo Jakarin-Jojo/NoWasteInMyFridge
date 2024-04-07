@@ -91,16 +91,22 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
+    implementation("com.google.firebase:firebase-messaging")
     // hilt
     implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-compiler:2.50")
+    implementation("androidx.hilt:hilt-common:1.2.0")
+    implementation ("androidx.hilt:hilt-work:1.2.0")
+    kapt ("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
    // retrofit
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-
     implementation ("androidx.compose.runtime:runtime-livedata:1.2.0-alpha03")
+
+    //WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.7.0")
 
     // read env file
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
