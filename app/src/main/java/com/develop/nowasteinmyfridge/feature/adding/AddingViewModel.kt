@@ -13,6 +13,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -74,5 +76,78 @@ class AddingViewModel @Inject constructor(
                 Log.e("addIngredient", "Unable to addIngredient", e)
             }
         }
+    }
+
+    fun checkAndAutoFillEfdDate(
+        name: String?,
+        mfgDate: Calendar,
+        isInFridge: Boolean,
+    ): Calendar? {
+        val recommendedEfdDate = Calendar.getInstance()
+
+        if (name.isNullOrEmpty()) {
+            Log.d("checkAndAutoFillEfdDate", "Name is empty or null.")
+            return null
+        }
+
+        when (name.lowercase(Locale.getDefault())) {
+            in listOf("pork", "cow", "sheep", "goat", "beef") -> {
+                recommendedEfdDate.timeInMillis = mfgDate.timeInMillis
+                recommendedEfdDate.add(Calendar.DAY_OF_YEAR, if (isInFridge) 360 else 5)
+            }
+
+            in listOf("chicken", "duck") -> {
+                recommendedEfdDate.timeInMillis = mfgDate.timeInMillis
+                recommendedEfdDate.add(Calendar.DAY_OF_YEAR, if (isInFridge) 360 else 2)
+            }
+
+            in listOf("shrimp", "shellfish", "crab", "squid", "fish") -> {
+                recommendedEfdDate.timeInMillis = mfgDate.timeInMillis
+                recommendedEfdDate.add(Calendar.DAY_OF_YEAR, if (isInFridge) 72 else 2)
+            }
+
+            "egg" -> {
+                recommendedEfdDate.timeInMillis = mfgDate.timeInMillis
+                recommendedEfdDate.add(Calendar.DAY_OF_YEAR, if (isInFridge) 360 else 35)
+            }
+
+            in listOf(
+                "kale", "coriander", "ginger", "galangal", "carrots", "onions", "taro",
+                "eggplant", "zucchini", "fresh chilies", "oranges", "pineapples", "grapes",
+                "sapodilla", "guava", "mango",
+            ) -> {
+                if (isInFridge) {
+                    Log.d("checkAndAutoFillEfdDate", "Do not freeze this ingredient: $name")
+                    return null
+                } else {
+                    recommendedEfdDate.timeInMillis = mfgDate.timeInMillis
+                    when (name.lowercase(Locale.getDefault())) {
+                        in listOf(
+                            "oranges",
+                            "pineapples"
+                        ) -> recommendedEfdDate.add(Calendar.DAY_OF_YEAR, 2)
+
+                        in listOf(
+                            "grapes",
+                            "sapodilla",
+                            "guava",
+                            "mango"
+                        ) -> recommendedEfdDate.add(
+                            Calendar.DAY_OF_YEAR, 5
+                        )
+
+                        else -> recommendedEfdDate.add(Calendar.DAY_OF_YEAR, 10)
+                    }
+                }
+            }
+
+            else -> {
+                Log.d("checkAndAutoFillEfdDate", "No expiration date suggested for name: $name")
+                return null
+            }
+        }
+
+        Log.d("checkAndAutoFillEfdDate", "Recommended Efd Date: $recommendedEfdDate")
+        return recommendedEfdDate
     }
 }

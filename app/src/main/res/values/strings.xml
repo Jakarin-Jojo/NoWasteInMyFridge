@@ -33,6 +33,7 @@
     <string name="add_ingredient">Add</string>
     <string name="take_photo">Take Photo</string>
     <string name="import_image_ingredient">Import Image</string>
+    <string name="suggest_date">Suggest date</string>
 
     <string name="label_name_user_profile">Name</string>
     <string name="label_first_name_user_profile">First Name</string>

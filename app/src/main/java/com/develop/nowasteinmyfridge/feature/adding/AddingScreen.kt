@@ -46,7 +46,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -102,7 +101,8 @@ fun AddingScreen(
     val isFoundProduct by addingViewModel.isFoundProduct.collectAsState()
     val getIngredientByBarcodeResult by addingViewModel.getIngredientByBarcodeResult.collectAsStateWithLifecycle()
     var brandsName by remember { mutableStateOf("") }
-
+    var isShowDatePicker by remember { mutableStateOf(false) }
+    var isFound by remember { mutableStateOf(true) }
     var imageUrl by remember { mutableStateOf("") }
     var scanName by remember {
         mutableStateOf(
@@ -125,6 +125,27 @@ fun AddingScreen(
 
     val addIngredientResult by addingViewModel.addIngredientResult.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
+    fun suggestDate() {
+        val isInFridge = isChecked
+        if (name.text.isEmpty() || mfgDate.timeInMillis == 0L) {
+            Toast.makeText(context, "Please fill in name first", Toast.LENGTH_SHORT).show()
+        } else {
+            val recommendedEfdDate =
+                addingViewModel.checkAndAutoFillEfdDate(name.text, mfgDate, isInFridge)
+            if (recommendedEfdDate != null) {
+                efdDate = recommendedEfdDate
+            } else {
+                isFound = false
+                Toast.makeText(
+                    context,
+                    "No recommended expiration date. Please fill in by yourself.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -143,30 +164,29 @@ fun AddingScreen(
                         .fillMaxHeight(fraction = 0.35f)
                 ) {
 
-                        if (selectImageUri != null) {
-                            Image(
-                                painter = rememberAsyncImagePainter(model = selectImageUri),
-                                contentDescription = "",
+                    if (selectImageUri != null) {
+                        Image(
+                            painter = rememberAsyncImagePainter(model = selectImageUri),
+                            contentDescription = "",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop,
+                        )
+                    } else {
+                        if (imageUrl != "") {
+                            AsyncImage(
+                                model = imageUrl,
+                                contentDescription = "Image for $imageUrl",
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop,
                             )
                         } else {
-                            if (imageUrl != null ) {
-                                AsyncImage(
-                                    model = imageUrl,
-                                    contentDescription = "Image for $imageUrl",
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop,
-                                )
-                            }
-                            else {
-                                Image(
-                                    painter = painterResource(id = R.mipmap.add_photo),
-                                    contentDescription = "",
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.FillBounds
-                                )
-                            }
+                            Image(
+                                painter = painterResource(id = R.mipmap.add_photo),
+                                contentDescription = "",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.FillBounds
+                            )
+                        }
                     }
 
                     Column(
@@ -286,10 +306,30 @@ fun AddingScreen(
                                 )
                                 ClickableTextWithPlaceholderWithNoValue(
                                     placeholder = stringResource(id = R.string.efd_placeholder),
-                                    date = null,
+                                    date = if (isShowDatePicker && name.text != "" && isFound) efdDate else null,
                                     onDateSelected = { efdDate = it }
                                 )
+                            }
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
+                            horizontalArrangement = Arrangement.End,
 
+                            ) {
+                            Button(
+                                onClick = {
+                                    isShowDatePicker = true
+                                    suggestDate()
+
+                                },
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.suggest_date),
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
                         Row(
@@ -304,73 +344,52 @@ fun AddingScreen(
                                     CircularProgressIndicator()
                                 }
                             } else {
-                                Column(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxSize(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                Button(
+                                    onClick = {
+                                        photoPickerLauncher.launch("image/*")
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = GreenButton),
                                 ) {
-                                    Button(
-                                        onClick = {
-                                            photoPickerLauncher.launch("image/*")
-                                        },
-                                        colors = ButtonDefaults.buttonColors(containerColor = GreenButton),
-                                    ) {
-                                        Text(
-                                            text = stringResource(id = R.string.import_image_ingredient),
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                }
-                                Column(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxSize(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                ) {
-                                    Button(
-                                        onClick = {
-                                            Log.d("addingViewModel", "$brandsName , $name.text, ${imageUrl.javaClass}, $imageUrl, $selectImageUri)")
-                                            addingViewModel.addIngredient(
-                                                IngredientCreate(
-                                                    name = brandsName.ifEmpty { name.text },
-                                                    quantity = quantity.text.toIntOrNull() ?: 0,
-                                                    image = imageUrl.ifEmpty {
-                                                        selectImageUri ?: ""
-                                                    },
-                                                    mfg = SimpleDateFormat(
-                                                        "yyyy-MM-dd",
-                                                        Locale.getDefault()
-                                                    ).format(mfgDate.time),
-                                                    efd = SimpleDateFormat(
-                                                        "yyyy-MM-dd",
-                                                        Locale.getDefault()
-                                                    ).format(efdDate.time),
-                                                    inFreeze = isChecked,
-                                                )
-                                            )
-                                        },
-                                        colors = ButtonDefaults.buttonColors(containerColor = GreenButton),
+                                    Text(
+                                        text = stringResource(id = R.string.import_image_ingredient),
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold
                                     )
-                                    {
-                                        Text(
-                                            text = stringResource(id = R.string.add_ingredient),
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
                                 }
-                                Column(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxSize(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                )  {
-                                    ScanBarcodeButton(addingViewModel)
+                                ScanBarcodeButton(addingViewModel)
+                                Button(
+                                    onClick = {
+                                        Log.d(
+                                            "addingViewModel",
+                                            "$brandsName , $name.text, ${imageUrl.javaClass}, $imageUrl, $selectImageUri)"
+                                        )
+                                        addingViewModel.addIngredient(
+                                            IngredientCreate(
+                                                name = brandsName.ifEmpty { name.text },
+                                                quantity = quantity.text.toIntOrNull() ?: 0,
+                                                image = imageUrl.ifEmpty {
+                                                    selectImageUri ?: ""
+                                                },
+                                                mfg = SimpleDateFormat(
+                                                    "yyyy-MM-dd",
+                                                    Locale.getDefault()
+                                                ).format(mfgDate.time),
+                                                efd = SimpleDateFormat(
+                                                    "yyyy-MM-dd",
+                                                    Locale.getDefault()
+                                                ).format(efdDate.time),
+                                                inFreeze = isChecked,
+                                            )
+                                        )
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = GreenButton),
+                                )
+                                {
+                                    Text(
+                                        text = stringResource(id = R.string.add_ingredient),
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
                             }
                             if (addIngredientResult is Result.Success) {
@@ -384,13 +403,15 @@ fun AddingScreen(
                                     Toast.LENGTH_SHORT,
                                 ).show()
                             }
-                            if (getIngredientByBarcodeResult is Result.Success){
-                                if (isFoundProduct == 1){
-                                    Toast.makeText(context,"Product Found",Toast.LENGTH_LONG).show()
-                                }else{
-                                    Toast.makeText(context,"Product not found",Toast.LENGTH_LONG).show()
+                            if (getIngredientByBarcodeResult is Result.Success) {
+                                if (isFoundProduct == 1) {
+                                    Toast.makeText(context, "Product Found", Toast.LENGTH_LONG)
+                                        .show()
+                                } else {
+                                    Toast.makeText(context, "Product not found", Toast.LENGTH_LONG)
+                                        .show()
                                 }
-                            }else if (getIngredientByBarcodeResult is Result.Error ){
+                            } else if (getIngredientByBarcodeResult is Result.Error) {
                                 val error = (addIngredientResult as Result.Error).exception
                                 Toast.makeText(
                                     context,
@@ -406,7 +427,6 @@ fun AddingScreen(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputFieldWithPlaceholder(
     placeholder: String,
@@ -460,7 +480,6 @@ fun InputFieldWithPlaceholder(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputFieldWithPlaceholderWithBorder(
     placeholder: String,
@@ -598,6 +617,11 @@ fun ClickableTextWithPlaceholderWithNoValue(
 ) {
     val context = LocalContext.current
     val formattedDate = remember { mutableStateOf(placeholder) }
+
+    // Update formattedDate when date changes
+    if (date != null) {
+        formattedDate.value = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date.time)
+    }
 
     Box(
         modifier = Modifier
