@@ -165,29 +165,20 @@ fun AddingScreen(
                         .fillMaxHeight(fraction = 0.35f)
                 ) {
 
-                    if (selectImageUri != null) {
-                        Image(
-                            painter = rememberAsyncImagePainter(model = selectImageUri),
-                            contentDescription = "",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop,
-                        )
-                    } else {
-                        if (imageUrl != "") {
+                        if (selectImageUri != null) {
+                            Image(
+                                painter = rememberAsyncImagePainter(model = selectImageUri),
+                                contentDescription = "",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop,
+                            )
+                        } else {
                             AsyncImage(
                                 model = imageUrl,
                                 contentDescription = "Image for $imageUrl",
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop,
                             )
-                        } else {
-                            Image(
-                                painter = painterResource(id = R.mipmap.add_photo),
-                                contentDescription = "",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.FillBounds
-                            )
-                        }
                     }
 
                     Column(

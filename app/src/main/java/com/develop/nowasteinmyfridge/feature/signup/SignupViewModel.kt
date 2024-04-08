@@ -22,7 +22,7 @@ class SignUpViewModel @Inject constructor(
         get() = _createUserResult
 
     fun createUser(userCreate: UserCreate) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _createUserResult.value = Result.Loading
             try {
                 createUserUseCase.invoke(userCreate).collect { result ->

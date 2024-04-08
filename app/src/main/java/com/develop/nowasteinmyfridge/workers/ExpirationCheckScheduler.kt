@@ -5,8 +5,6 @@ import android.util.Log
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -61,7 +59,7 @@ class ExpirationCheckScheduler @Inject constructor(
         try {
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 "ExpiryCheckWorker",
-                ExistingPeriodicWorkPolicy.REPLACE,
+                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
                 workRequest
             )
             Log.d("ExpirationCheckScheduler", "Daily check scheduled successfully")
