@@ -32,6 +32,28 @@ class FirebaseFirestoreRepositoryImpl @Inject constructor(
     private val userEmail = firebaseAuth.currentUser?.email.orEmpty()
     private val storageRef = firebaseStorage.reference
 
+    override suspend fun updateIngredientQuantity(ingredientID: String, newQuantity: Int): Result<Unit> {
+        return try {
+            val querySnapshot = db.collection("users/$userEmail/ingredients")
+                .whereEqualTo("id", ingredientID)
+                .get()
+                .await()
+
+            if (!querySnapshot.isEmpty) {
+                val documentReference = querySnapshot.documents[0].reference
+                documentReference.update("quantity", newQuantity).await()
+                Result.Success(Unit)
+            } else {
+                Result.Error(Exception("Ingredient not found"))
+            }
+        } catch (e: Exception) {
+            Log.e("FirestoreError", "Error updating ingredient quantity: $e")
+            Result.Error(e)
+        }
+    }
+
+
+
     override suspend fun deleteIngredient(ingredientID: String): Result<Unit> {
         return try {
             val querySnapshot = db.collection("users/$userEmail/ingredients")

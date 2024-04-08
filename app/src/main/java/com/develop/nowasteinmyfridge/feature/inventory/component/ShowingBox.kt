@@ -42,7 +42,6 @@ fun ShowingBox(
             .clip(shape = RoundedCornerShape(10.dp))
             .padding(10.dp)
             .clickable {
-                // Toggle the visibility of the delete icon when the box is clicked
                 isDeleteVisible = !isDeleteVisible
             },
         contentAlignment = Alignment.BottomEnd
@@ -55,7 +54,7 @@ fun ShowingBox(
                     val gradient = Brush.verticalGradient(
                         colors = listOf(Color.Transparent, Color.Gray),
                         startY = size.height / 4,
-                        endY = size.height
+                        endY = size.height,
                     )
                     onDrawWithContent {
                         drawContent()

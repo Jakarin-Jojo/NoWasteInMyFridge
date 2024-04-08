@@ -20,4 +20,6 @@ interface FirebaseFirestoreRepository {
     suspend fun clearGroceryList()
 
     suspend fun deleteIngredient(ingredientID: String): Result<Unit>
+
+    suspend fun updateIngredientQuantity(ingredientID: String, newQuantity: Int): Result<Unit>
 }
