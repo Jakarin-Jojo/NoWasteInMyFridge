@@ -122,7 +122,6 @@ fun InventoryScreen(
                             IconButton(
                                 onClick = { showDialog = false },
                                 modifier = Modifier
-//                                    .padding(end = 8.dp, top = 8.dp)
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Dangerous,
@@ -130,7 +129,6 @@ fun InventoryScreen(
                                 )
                             }
                         }
-//                        Spacer(modifier = Modifier.height(32.dp))
                         Text(
                             text = "Update Quantity",
                             fontWeight = FontWeight.Bold
