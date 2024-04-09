@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">NoWasteInMyFridge</string>
-    <string name="welcome_message">welcome</string>
+    <string name="welcome_message">Hi</string>
     <string name="ingredient">Ingredient</string>
     <string name="label_suggest_menu">Today Option</string>
     <string name="no_suggest_menu">No suggested menu is available today</string>

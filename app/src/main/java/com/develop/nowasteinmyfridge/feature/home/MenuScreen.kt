@@ -19,9 +19,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTimeFilled
-import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.SetMeal
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -55,8 +56,8 @@ fun DisplayIngredients(ingredients: List<String>) {
 fun OvalIconView(icon: ImageVector, text: String) {
     Box(
         modifier = Modifier
-            .height(96.dp)
-            .width(70.dp)
+            .height(110.dp)
+            .width(74.dp)
             .background(Color.Gray, RoundedCornerShape(100.dp)),
     ) {
         Column(
@@ -67,7 +68,8 @@ fun OvalIconView(icon: ImageVector, text: String) {
                 modifier = Modifier
                     .size(50.dp)
                     .offset(y = (10).dp)
-                    .background(Color.White, RoundedCornerShape(100.dp))
+                    .background(Color.White, RoundedCornerShape(100.dp)),
+                contentAlignment = Alignment.Center
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -84,19 +86,27 @@ fun OvalIconView(icon: ImageVector, text: String) {
                 }
             }
             Spacer(modifier = Modifier.height(14.dp))
-            Text(
-                text = text,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Normal,
-                color = White,
-            )
+            Column(
+                modifier = Modifier.width(50.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = text,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = White,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 12.sp
+                )
+            }
         }
     }
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MenuScreen(name: String?, image: String?, ingredientList: List<String>) {
+fun MenuScreen(name: String?, image: String?, ingredientList: List<String>, time: Float, calories: Float, mealType: String, dishType: String) {
     Scaffold {
         Column(
             modifier = Modifier
@@ -155,14 +165,16 @@ fun MenuScreen(name: String?, image: String?, ingredientList: List<String>) {
                             ) {
                                 OvalIconView(
                                     icon = Icons.Default.AccessTimeFilled,
-                                    text = "40 mins"
+                                    text = time.toInt().toString() + " mins"
                                 )
-                                OvalIconView(icon = Icons.Default.Fastfood, text = "40 mins")
+                                OvalIconView(icon = Icons.Default.LocalFireDepartment,
+                                    text = calories.toInt().toString() + " calories"
+                                )
                                 OvalIconView(
-                                    icon = Icons.Default.LocalFireDepartment,
-                                    text = "40 mins"
+                                    icon = Icons.Default.Fastfood,
+                                    text = mealType
                                 )
-                                OvalIconView(icon = Icons.Default.Bookmark, text = "40 mins")
+                                OvalIconView(icon = Icons.Default.SetMeal, text = dishType)
                             }
                         }
                         Spacer(modifier = Modifier.height(32.dp))

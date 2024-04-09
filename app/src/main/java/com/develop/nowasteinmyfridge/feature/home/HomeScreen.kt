@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -33,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,6 +49,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,7 +64,9 @@ import com.develop.nowasteinmyfridge.feature.inventory.InventoryViewModel
 import com.develop.nowasteinmyfridge.ui.theme.BaseColor
 import com.develop.nowasteinmyfridge.ui.theme.BaseGray
 import com.develop.nowasteinmyfridge.ui.theme.Black
+import com.develop.nowasteinmyfridge.ui.theme.ShadowGray
 import com.develop.nowasteinmyfridge.util.Result
+import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -78,15 +83,20 @@ fun HomeScreen(
     val displayedIngredients = ingredientsList.map { ingredient ->
         ingredient.name to ingredient.image
     }
-
+    var numberofingredients by remember { mutableStateOf(3) }
     val names = displayedIngredients.map { it.first }
     val images = displayedIngredients.map { it.second }
+    var foundState by remember { mutableStateOf(false) }
 
     val sortedDisplayedIngredients = ingredientsList.sortedBy { ingredient ->
         val dateString = ingredient.efd
         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(dateString)
     }
-    val ingredientsForSearch = sortedDisplayedIngredients
+    val ingredientsForSearch3 = sortedDisplayedIngredients
+        .take(3).joinToString(", ") { it.name }
+    val ingredientsForSearch2 = sortedDisplayedIngredients
+        .take(2).joinToString(", ") { it.name }
+    val ingredientsForSearch1 = sortedDisplayedIngredients
         .take(1).joinToString(", ") { it.name }
 
     val userProfile = when (val result = userInfoState) {
@@ -100,11 +110,11 @@ fun HomeScreen(
     }
     val userName = userProfile?.firstName ?: stringResource(id = R.string.loading)
 
-    if (ingredientsForSearch.isNotEmpty()) {
+    if (ingredientsForSearch3.isNotEmpty()) {
         LaunchedEffect(Unit) {
             try {
-                homeViewModel.searchRecipes(ingredientsForSearch)
-                Log.d("IngredientsForSearch", ingredientsForSearch)
+                homeViewModel.searchRecipes(ingredientsForSearch3)
+                Log.d("IngredientsForSearch", ingredientsForSearch3)
             } catch (e: Exception) {
                 Log.e("API Request Failed", e.message ?: "Unknown error")
             }
@@ -116,26 +126,50 @@ fun HomeScreen(
     val recipesState by homeViewModel.recipesState
     val hits = recipesState.hits
 
+    LaunchedEffect(recipesState) {
+        delay(3000)
+        if (recipesState != null && hits.isEmpty()) {
+            numberofingredients = 2
+            Log.d("kiki", "popopkull")
+            foundState = true
+        }
+
+        if (hits.isEmpty()) {
+            if (numberofingredients == 2) {
+                homeViewModel.searchRecipes(ingredientsForSearch2)
+                Log.d("Using Ingredients", "Ingredients for search: $ingredientsForSearch2")
+                if (recipesState != null && hits.isEmpty()) {
+                    numberofingredients = 1
+                    Log.d("Setting Number of Ingredients", "Number of ingredients set to 1")
+                }
+            } else if (numberofingredients == 1) {
+                homeViewModel.searchRecipes(ingredientsForSearch1)
+                Log.d("Using Ingredients", "Ingredients for search: $ingredientsForSearch1")
+            }
+        }
+    }
+    if (numberofingredients == 1) {
+        homeViewModel.searchRecipes(ingredientsForSearch1)
+    }
     Column {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 48.dp)
                 .background(color = BaseColor)
         ) {
             Scaffold {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
+                    verticalArrangement = Arrangement.Top
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .fillMaxHeight(fraction = 0.2f)
+                            .fillMaxHeight(fraction = 0.25f)
                     ) {
                         Image(
-                            painter = painterResource(id = R.mipmap.home_topper),
+                            painter = painterResource(id = R.mipmap.topper),
                             contentDescription = "",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.FillBounds
@@ -143,13 +177,14 @@ fun HomeScreen(
                         Column(
                             modifier = Modifier
                                 .wrapContentSize()
-                                .align(Alignment.CenterStart)
-                                .padding(start = 20.dp, top = 16.dp)
+                                .align(Alignment.TopStart)
+                                .padding(start = 20.dp, top = 70.dp)
                         ) {
                             Text(
                                 text = stringResource(id = R.string.welcome_message) + ", " + userName,
                                 style = TextStyle(
                                     fontSize = 28.sp,
+                                    fontWeight = FontWeight.Bold,
                                     shadow = Shadow(
                                         color = Color.Black,
                                         offset = Offset(2f, 2f),
@@ -158,17 +193,11 @@ fun HomeScreen(
                                 ),
                                 color = Color.White,
                             )
-                        }
-                        Column(
-                            modifier = Modifier
-                                .wrapContentSize()
-                                .align(Alignment.BottomStart)
-                                .padding(start = 20.dp, bottom = 10.dp)
-                        ) {
+                            Spacer(modifier = Modifier.height(32.dp))
                             Text(
                                 text = stringResource(id = R.string.ingredient),
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = Black,
+                                color = Color.White,
                             )
                         }
                     }
@@ -176,55 +205,75 @@ fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(color = BaseColor)
+                            .offset(y = (-44).dp)
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .fillMaxWidth()
-                                .padding(16.dp)
                         ) {
-                            SliderBoxComponent(names = names, images = images)
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = stringResource(id = R.string.label_suggest_menu),
-                                style = MaterialTheme.typography.titleMedium,
-                                color = Black
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            if (hits.isEmpty()) {
+                            Column(
+                                modifier = Modifier
+                                     .padding(start = 8.dp)
+                            ) {
+                                SliderBoxComponent(names = names, images = images)
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
                                 Text(
-                                    text = stringResource(id = R.string.no_suggest_menu),
-                                    style = MaterialTheme.typography.titleMedium,
+                                    text = stringResource(id = R.string.label_suggest_menu),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontSize = 18.sp,
                                     color = Black
                                 )
-                            } else {
-                                val recipeNames = hits.map { it.recipe.label }
-                                val recipeImages = hits.map { it.recipe.image }
-                                val ingredientLinesSent = hits.map { recipeHit ->
-                                    recipeHit.recipe.ingredientLines.let {
-                                        listOfNotNull(it)
-                                    }
-                                }.flatten()
-                                SliderBoxComponentVertical(
-                                    names = recipeNames,
-                                    images = recipeImages,
-                                    ingredientLines = ingredientLinesSent,
-                                    onItemClick = { name, image, ingredientLines ->
-                                        navController.navigate(
-                                            "menu/${Uri.encode(name)}/${
-                                                Uri.encode(
-                                                    image
-                                                )
-                                            }?ingredients=${
-                                                Uri.encode(
-                                                    ingredientLines.joinToString(
-                                                        ";"
+                                Spacer(modifier = Modifier.height(12.dp))
+                                if (hits.isEmpty()) {
+                                    Text(
+                                        text = stringResource(id = R.string.no_suggest_menu),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = Black
+                                    )
+                                } else {
+                                    val recipeNames = hits.map { it.recipe.label }
+                                    val recipeImages = hits.map { it.recipe.image }
+                                    val ingredientLinesSent = hits.map { recipeHit ->
+                                        recipeHit.recipe.ingredientLines.let {
+                                            listOfNotNull(it)
+                                        }
+                                    }.flatten()
+                                    val calories = hits.map { it.recipe.calories }
+                                    val totalTime = hits.map { it.recipe.totalTime }
+                                    val mealType = hits.flatMap { it.recipe.mealType }
+                                    val dishType = hits.flatMap { it.recipe.dishType }
+                                    SliderBoxComponentVertical(
+                                        names = recipeNames,
+                                        images = recipeImages,
+                                        ingredientLines = ingredientLinesSent,
+                                        calories = calories,
+                                        totalTime = totalTime,
+                                        mealType = mealType,
+                                        dishType = dishType,
+                                        onItemClick = { name, image, ingredientLines, calories, totalTime, mealType, dishType ->
+                                            navController.navigate(
+                                                "menu/${Uri.encode(name)}/${
+                                                    Uri.encode(image)
+                                                }?ingredients=${
+                                                    Uri.encode(
+                                                        ingredientLines.joinToString(
+                                                            ";"
+                                                        )
                                                     )
-                                                )
-                                            }"
-                                        )
-                                    }
-                                )
+                                                }&calories=${Uri.encode(calories.toString())}&totalTime=${Uri.encode(totalTime.toString())}&mealType=${Uri.encode(
+                                                    mealType
+                                                )}&dishType=${Uri.encode(dishType)}"
+                                            )
+
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
@@ -250,7 +299,7 @@ fun SliderBoxComponent(
         itemsIndexed(names) { index, name ->
             Box(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
+                    .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(MaterialTheme.colorScheme.background)
                     .clickable {
@@ -289,8 +338,8 @@ fun SliderBoxComponent(
                 ) {
                     drawIntoCanvas {
                         drawRect(
-                            color = BaseGray.copy(alpha = 0.25f),
-                            topLeft = Offset(0f, 0f),
+                            color = ShadowGray.copy(alpha = 0.3f),
+                            topLeft = Offset(1f, 1f),
                             size = Size(size.width, size.height)
                         )
                     }
@@ -306,7 +355,11 @@ fun SliderBoxComponentVertical(
     images: List<String>,
     ingredientLines: List<List<String>>,
     modifier: Modifier = Modifier,
-    onItemClick: (String, String, List<String>) -> Unit
+    calories: List<Float>,
+    totalTime: List<Float>,
+    mealType: List<String>,
+    dishType: List<String>,
+    onItemClick: (String, String, List<String>, Float, Float, String, String) -> Unit
 ) {
     var selectedIndex by remember { mutableIntStateOf(0) }
 
@@ -321,7 +374,15 @@ fun SliderBoxComponentVertical(
                     .background(MaterialTheme.colorScheme.background)
                     .clickable {
                         selectedIndex = index
-                        onItemClick(name, images.getOrNull(index) ?: "", ingredientLines[index])
+                        onItemClick(
+                            name,
+                            images.getOrNull(index) ?: "",
+                            ingredientLines[index],
+                            calories.getOrNull(index) ?: 0f,
+                            totalTime.getOrNull(index) ?: 0f,
+                            mealType[index],
+                            dishType[index]
+                        )
                     }
                     .height(100.dp)
             ) {
@@ -334,7 +395,7 @@ fun SliderBoxComponentVertical(
                     Box(
                         modifier = Modifier
                             .fillMaxHeight()
-                            .width(250.dp)
+                            .width(230.dp)
                             .padding(end = 16.dp),
                         contentAlignment = Alignment.CenterStart
                     ) {
@@ -367,7 +428,7 @@ fun SliderBoxComponentVertical(
                 ) {
                     drawIntoCanvas {
                         drawRect(
-                            color = BaseGray.copy(alpha = 0.25f),
+                            color = BaseGray.copy(alpha = 0.3f),
                             topLeft = Offset(0f, 0f),
                             size = Size(size.width, size.height),
                         )
