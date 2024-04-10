@@ -140,7 +140,7 @@ fun InventoryScreen(
                         Column {
                             Text(
                                 text = "Ingredient: ${ingredientsList[selectedIngredientIndex].name}\n" +
-                                        "Quantity: ${ingredientsList[selectedIngredientIndex].quantity} gram"
+                                        "Quantity: ${ingredientsList[selectedIngredientIndex].quantity} grams/unit"
                             )
 
                             Spacer(modifier = Modifier.height(16.dp))

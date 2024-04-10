@@ -24,7 +24,7 @@
     <string name="inventory_info">Add your ingredient</string>
     <string name="ingredient_name">Ingredient name</string>
     <string name="name_placeholder">name</string>
-    <string name="quantity_placeholder">quantity</string>
+    <string name="quantity_placeholder">Quantity of ingredient in grams/unit</string>
     <string name="quantity">Quantity of ingredient</string>
     <string name="manufacturing_date">Manufacturing date</string>
     <string name="mfg_placeholder">MFG</string>
