@@ -50,4 +50,10 @@ sealed class MenuSettingScreen(
         nameResID = R.string.menu_waste_report,
         icon = Icons.Default.Notifications,
     )
+
+    data object TestNotification:MenuSettingScreen(
+        route = "test notification",
+        nameResID = R.string.test_noti,
+        icon = Icons.Default.Notifications,
+    )
 }

@@ -19,6 +19,7 @@
     <string name="menu_language">Language</string>
     <string name="menu_grocery">Grocery List</string>
     <string name="menu_waste_report">Waste report</string>
+    <string name="test_noti">test noti</string>
 
     <string name="inventory">INVENTORY</string>
     <string name="inventory_info">Add your ingredient</string>
