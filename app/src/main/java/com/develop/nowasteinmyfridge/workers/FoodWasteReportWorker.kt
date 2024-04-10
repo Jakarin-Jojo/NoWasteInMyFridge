@@ -30,7 +30,7 @@ class FoodWasteReportWorker @AssistedInject constructor(
         return try {
             addPerformanceUsingIngredientUseCase.invoke()
             val performance = getFoodWasteReportUseCase.invoke()
-            sendNotification("Now has the performance of reducing food waste by ${performance.last()} %")
+            sendNotification("Now has the performance of reducing food waste by ${performance.last().performance} %")
             Log.d("FoodWasteReportWorker", "FoodWasteReportWorker: Task completed successfully")
             Result.success()
         } catch (e:Exception){
@@ -99,6 +99,7 @@ class FoodWasteReportWorker @AssistedInject constructor(
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(message))
                 .setVibrate(vibrationPattern) // Vibrate
                 .setLights(0xff00ff00.toInt(), 300, 1000) // LED notification light
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE) // Assign category for notification

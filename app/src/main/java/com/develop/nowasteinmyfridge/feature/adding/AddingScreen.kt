@@ -356,40 +356,40 @@ fun AddingScreen(
                                     )
                                 }
                                 ScanBarcodeButton(addingViewModel)
+                                val nameValue = brandsName.ifEmpty { name.text }
+                                val quantityValue = quantity.text.toIntOrNull()
+                                val hasValidName = nameValue.isNotBlank()
+                                val hasValidQuantity = quantityValue != null && quantityValue >= 1
+                                val hasValidEfd = efdDate.timeInMillis > System.currentTimeMillis()
                                 Button(
                                     onClick = {
                                         Log.d(
                                             "addingViewModel",
-                                            "$brandsName , $name.text, ${imageUrl.javaClass}, $imageUrl, $selectImageUri)"
+                                            "$brandsName, $name.text, ${imageUrl.javaClass}, $imageUrl, $selectImageUri)"
                                         )
                                         addingViewModel.addIngredient(
                                             IngredientCreate(
-                                                name = brandsName.ifEmpty { name.text },
-                                                quantity = quantity.text.toIntOrNull() ?: 0,
+                                                name = nameValue,
+                                                quantity = quantityValue ?: 0,
                                                 image = imageUrl.ifEmpty {
                                                     selectImageUri ?: ""
                                                 },
-                                                mfg = SimpleDateFormat(
-                                                    "yyyy-MM-dd",
-                                                    Locale.getDefault()
-                                                ).format(mfgDate.time),
-                                                efd = SimpleDateFormat(
-                                                    "yyyy-MM-dd",
-                                                    Locale.getDefault()
-                                                ).format(efdDate.time),
+                                                mfg = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(mfgDate.time),
+                                                efd = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(efdDate.time),
                                                 inFreeze = isChecked,
                                             )
                                         )
                                     },
                                     colors = ButtonDefaults.buttonColors(containerColor = GreenButton),
-                                )
-                                {
+                                    enabled = hasValidName && hasValidQuantity && hasValidEfd
+                                ) {
                                     Text(
                                         text = stringResource(id = R.string.add_ingredient),
                                         color = Color.White,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
+
                             }
                             if (addIngredientResult is Result.Success) {
                                 Toast.makeText(context, "Adding Success", Toast.LENGTH_SHORT).show()
@@ -497,9 +497,7 @@ fun InputFieldWithPlaceholderWithBorder(
         BasicTextField(
             value = textValue,
             onValueChange = {
-                if ((it.text.toIntOrNull() ?: 0) > 0) {
-                    onValueChange(it)
-                }
+                onValueChange(it)
             },
             textStyle = TextStyle(
                 color = Color.Black,
@@ -535,6 +533,7 @@ fun InputFieldWithPlaceholderWithBorder(
         }
     }
 }
+
 
 @Composable
 fun ClickableTextWithPlaceholder(

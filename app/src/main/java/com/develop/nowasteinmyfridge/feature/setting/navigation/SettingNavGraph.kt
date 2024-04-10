@@ -5,10 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.develop.nowasteinmyfridge.BottomBarScreen
-import com.develop.nowasteinmyfridge.Screen
 import com.develop.nowasteinmyfridge.feature.account.AccountScreen
 import com.develop.nowasteinmyfridge.feature.grocerylist.GroceryListScreen
-import com.develop.nowasteinmyfridge.feature.login.LoginScreen
 import com.develop.nowasteinmyfridge.feature.setting.MenuSettingScreen
 import com.develop.nowasteinmyfridge.feature.setting.SettingScreen
 import com.develop.nowasteinmyfridge.feature.wastereport.WasteReportScreen
@@ -35,5 +33,4 @@ fun NavGraphBuilder.settingNavGraph(
             WasteReportScreen()
         }
     }
-
 }

@@ -256,27 +256,26 @@ fun InventoryScreen(
                                     Button(
                                         onClick = {
                                             showDialog = false
-                                            val initialQuantity =
-                                                ingredientsList[selectedIngredientIndex].quantity
-                                            val newQuantity =
-                                                (initialQuantity - quantityText.text.toIntOrNull()!!)
-                                            (initialQuantity - newQuantity)
-                                            if (initialQuantity == newQuantity) {
-                                                inventoryViewModel.useUpIngredient(ingredientsList[selectedIngredientIndex])
-                                            } else {
-                                                inventoryViewModel.updateIngredientQuantity(
-                                                    ingredientID = ingredientsList[selectedIngredientIndex].id,
-                                                    newQuantity = newQuantity,
-                                                )
+                                            val initialQuantity = ingredientsList[selectedIngredientIndex].quantity
+                                            val inputQuantity = quantityText.text.toIntOrNull() ?: 0
+
+                                            if (inputQuantity in 1..initialQuantity) {
+                                                val newQuantity = initialQuantity - inputQuantity
+                                                if (newQuantity == 0) {
+                                                    inventoryViewModel.useUpIngredient(ingredientsList[selectedIngredientIndex])
+                                                } else {
+                                                    inventoryViewModel.updateIngredientQuantity(
+                                                        ingredientID = ingredientsList[selectedIngredientIndex].id,
+                                                        newQuantity = newQuantity,
+                                                    )
+                                                }
                                             }
                                         },
-                                        enabled = (quantityText.text.toIntOrNull()
-                                            ?: 0) <= ingredientsList[selectedIngredientIndex].quantity,
+                                        enabled = quantityText.text.toIntOrNull() in 1..(ingredientsList[selectedIngredientIndex].quantity),
                                         modifier = Modifier.padding(horizontal = 6.dp)
                                     ) {
                                         Text(text = "Use")
                                     }
-
                                 }
                             }
                         }

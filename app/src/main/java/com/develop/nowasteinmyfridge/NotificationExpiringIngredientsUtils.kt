@@ -49,9 +49,6 @@ class NotificationExpiringIngredientsUtils @Inject constructor(
         )
 
 
-        // Create a vibration pattern
-        val vibrationPattern = longArrayOf(0, 400, 200, 400)
-
         // Create the notification
         val notificationBuilder =
             NotificationCompat.Builder(context, "expiring_ingredients_channel")
@@ -61,7 +58,8 @@ class NotificationExpiringIngredientsUtils @Inject constructor(
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
-                .setVibrate(vibrationPattern) // Vibrate
+                .setStyle(NotificationCompat.BigTextStyle().bigText(message)) // Set BigTextStyle
+                .setVibrate(longArrayOf(0, 400, 200, 400)) // Vibrate
                 .setLights(0xff00ff00.toInt(), 300, 1000) // LED notification light
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE) // Assign category for notification
 
