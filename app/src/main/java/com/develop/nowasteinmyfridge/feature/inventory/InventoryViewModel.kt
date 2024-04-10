@@ -9,6 +9,7 @@ import com.develop.nowasteinmyfridge.data.model.Ingredient
 import com.develop.nowasteinmyfridge.domain.DeleteIngredientUseCase
 import com.develop.nowasteinmyfridge.domain.GetIngredientsUseCase
 import com.develop.nowasteinmyfridge.domain.UpdateIngredientQuantityUseCase
+import com.develop.nowasteinmyfridge.domain.UseUpIngredientsUseCase
 import com.develop.nowasteinmyfridge.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +23,7 @@ class InventoryViewModel @Inject constructor(
     private val getIngredientsUseCase: GetIngredientsUseCase,
     private val deleteIngredientUseCase: DeleteIngredientUseCase,
     private val updateIngredientQuantityUseCase: UpdateIngredientQuantityUseCase,
+    private val useUpIngredientsUseCase: UseUpIngredientsUseCase,
 ) : ViewModel() {
     private val _ingredientsState = mutableStateOf<List<Ingredient>>(emptyList())
     val ingredientsState: State<List<Ingredient>>
@@ -70,6 +72,20 @@ class InventoryViewModel @Inject constructor(
                 getIngredients()
                 _updateIngredientQuantityState.value = Result.Success(Unit)
             } catch (e: Exception) {
+                Log.e("updateIngredientQuantity", "Unable to update ingredient quantity", e)
+                _updateIngredientQuantityState.value = Result.Error(e)
+            }
+        }
+    }
+
+    fun useUpIngredient(ingredient: Ingredient){
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _updateIngredientQuantityState.value = Result.Loading
+                useUpIngredientsUseCase.invoke(ingredient)
+                getIngredients()
+                _updateIngredientQuantityState.value = Result.Success(Unit)
+            }catch (e:Exception){
                 Log.e("updateIngredientQuantity", "Unable to update ingredient quantity", e)
                 _updateIngredientQuantityState.value = Result.Error(e)
             }

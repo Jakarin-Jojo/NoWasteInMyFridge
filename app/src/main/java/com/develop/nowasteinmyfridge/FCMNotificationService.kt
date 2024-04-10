@@ -21,8 +21,8 @@ class FCMNotificationService : FirebaseMessagingService() {
         remoteMessage.notification?.let {
             val messageBody = it.body
             if (messageBody != null) {
-                val notificationUtils = NotificationUtils(applicationContext)
-                notificationUtils.showNotification(messageBody)
+                val notificationExpiringIngredientsUtils = NotificationExpiringIngredientsUtils(applicationContext)
+                notificationExpiringIngredientsUtils.showNotification(messageBody)
             }
         }
     }

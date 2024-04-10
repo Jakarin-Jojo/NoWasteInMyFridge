@@ -11,7 +11,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 
-class NotificationUtils @Inject constructor(
+class NotificationExpiringIngredientsUtils @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
 

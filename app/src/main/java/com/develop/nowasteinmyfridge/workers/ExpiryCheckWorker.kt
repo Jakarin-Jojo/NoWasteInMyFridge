@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.develop.nowasteinmyfridge.NotificationUtils
+import com.develop.nowasteinmyfridge.NotificationExpiringIngredientsUtils
 import com.develop.nowasteinmyfridge.data.model.Ingredient
 import com.develop.nowasteinmyfridge.domain.CheckExpirationUseCase
 import dagger.assisted.Assisted
@@ -16,7 +16,7 @@ class ExpiryCheckWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val checkExpirationUseCase: CheckExpirationUseCase,
-    private val notificationUtils: NotificationUtils,
+    private val notificationExpiringIngredientsUtils: NotificationExpiringIngredientsUtils,
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
@@ -25,7 +25,7 @@ class ExpiryCheckWorker @AssistedInject constructor(
             if (expiringIngredients.isNotEmpty()) {
                 // Trigger notification
                 val message = buildNotificationMessage(expiringIngredients)
-                notificationUtils.showNotification(message)
+                notificationExpiringIngredientsUtils.showNotification(message)
             }
             Log.d("ExpiryCheckWorker", "ExpiryCheckWorker: Task completed successfully")
             Result.success()

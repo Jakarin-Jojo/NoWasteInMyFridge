@@ -6,6 +6,7 @@ import com.develop.nowasteinmyfridge.data.model.GroceryList
 import com.develop.nowasteinmyfridge.data.model.GroceryListCreate
 import com.develop.nowasteinmyfridge.data.model.Ingredient
 import com.develop.nowasteinmyfridge.data.model.IngredientCreate
+import com.develop.nowasteinmyfridge.data.model.Report
 import com.develop.nowasteinmyfridge.data.model.UserCreate
 import com.develop.nowasteinmyfridge.data.model.UserProfile
 import com.develop.nowasteinmyfridge.util.Result
@@ -32,26 +33,79 @@ class FirebaseFirestoreRepositoryImpl @Inject constructor(
     private val userEmail = firebaseAuth.currentUser?.email.orEmpty()
     private val storageRef = firebaseStorage.reference
 
-    override suspend fun updateIngredientQuantity(ingredientID: String, newQuantity: Int): Result<Unit> {
+    override suspend fun updateIngredientQuantity(
+        ingredientID: String,
+        newQuantity: Int,
+    ): Result<Unit> {
         return try {
-            val querySnapshot = db.collection("users/$userEmail/ingredients")
+            val ingredientQuery = db.collection("users/$userEmail/ingredients")
                 .whereEqualTo("id", ingredientID)
                 .get()
                 .await()
 
-            if (!querySnapshot.isEmpty) {
-                val documentReference = querySnapshot.documents[0].reference
-                documentReference.update("quantity", newQuantity).await()
-                Result.Success(Unit)
-            } else {
-                Result.Error(Exception("Ingredient not found"))
+            if (ingredientQuery.isEmpty) {
+                Log.e("Firestore not Found", "Ingredient not found:")
+                return Result.Error(Exception("Ingredient not found"))
             }
+
+            val ingredientDocumentRef = ingredientQuery.documents[0].reference
+            ingredientDocumentRef.update("quantity", newQuantity).await()
+            Result.Success(Unit)
         } catch (e: Exception) {
             Log.e("FirestoreError", "Error updating ingredient quantity: $e")
             Result.Error(e)
         }
     }
 
+
+    override suspend fun useUpIngredientUsed(ingredient: Ingredient) {
+      try {
+          db.collection("users/$userEmail/ingredientsUsed")
+              .add(ingredient)
+              .await()
+          deleteIngredient(ingredient.id)
+      }catch (e:Exception){
+          Log.e("FirestoreError", "Error updating ingredient quantity: $e")
+      }
+    }
+
+    override suspend fun getFoodWasteReport(): List<Report> {
+        var report = emptyList<Report>()
+        Log.e("Hi ", "getFoodWasteReport FireBase ")
+        try {
+            val querySnapshot = db.collection("users/$userEmail/foodWasteReport")
+                .get()
+                .await()
+            report = querySnapshot.toObjects(Report::class.java)
+            Log.d("FirebaseFirestore", "FirebaseFirestore: Success to getFoodWasteReport")
+        }catch (e:Exception){
+            Log.e("FirestoreError", "Error to getFoodWasteReport: $e")
+        }
+        return report
+    }
+
+    override suspend fun addPerformance(report: Report) {
+        try {
+            db.collection("users/$userEmail/foodWasteReport")
+                .add(report)
+                .await()
+        }catch (e:Exception){
+            Log.e("FirestoreError", "Error to addPerformance: $e")
+        }
+    }
+
+    override suspend fun getIngredientUsed(): List<Ingredient> {
+        Log.d("FirebaseFirestore", "FirebaseFirestore: Success to getIngredientUsed")
+        var ingredients = emptyList<Ingredient>()
+        try {
+            val querySnapshot = db.collection("users/$userEmail/ingredientsUsed").get().await()
+            ingredients = querySnapshot.toObjects(Ingredient::class.java)
+            Log.d("FirebaseFirestore", "FirebaseFirestore: Success to getIngredientUsed")
+        } catch (e: FirebaseFirestoreException) {
+            Log.e("Error", "Unable to getIngredient: $e")
+        }
+        return ingredients
+    }
 
 
     override suspend fun deleteIngredient(ingredientID: String): Result<Unit> {
@@ -109,7 +163,7 @@ class FirebaseFirestoreRepositoryImpl @Inject constructor(
             val querySnapshot = db.collection("users/$userEmail/groceryList").get().await()
             groceryLists = querySnapshot.toObjects(GroceryList::class.java)
         } catch (e: FirebaseFirestoreException) {
-            Log.d("Error", "Unable to getGrocery: $e")
+            Log.e("Error", "Unable to getGrocery: $e")
         }
         return groceryLists
     }
@@ -120,7 +174,7 @@ class FirebaseFirestoreRepositoryImpl @Inject constructor(
             val querySnapshot = db.collection("users/$userEmail/ingredients").get().await()
             ingredients = querySnapshot.toObjects(Ingredient::class.java)
         } catch (e: FirebaseFirestoreException) {
-            Log.d("Error", "Unable to getIngredient: $e")
+            Log.e("Error", "Unable to getIngredient: $e")
         }
         return ingredients
     }
@@ -131,11 +185,13 @@ class FirebaseFirestoreRepositoryImpl @Inject constructor(
             val imageUri = ingredient.image as? Uri
 
             if (imageUri != null) {
-                val ref = storageRef.child("users/$userEmail/ingredients/${imageUri.lastPathSegment}")
+                val ref =
+                    storageRef.child("users/$userEmail/ingredients/${imageUri.lastPathSegment}")
                 val uploadTask = ref.putFile(imageUri)
                 try {
                     val taskSnapshot = uploadTask.await()
-                    val imageUrl = taskSnapshot.metadata!!.reference!!.downloadUrl.await().toString()
+                    val imageUrl =
+                        taskSnapshot.metadata!!.reference!!.downloadUrl.await().toString()
                     val newIngredient = Ingredient(
                         id = ingredientId,
                         name = ingredient.name,
@@ -167,7 +223,7 @@ class FirebaseFirestoreRepositoryImpl @Inject constructor(
                     .await()
             }
         } catch (e: FirebaseFirestoreException) {
-            Log.d("FirestoreError", "Error adding ingredient to Firestore: $e")
+            Log.e("FirestoreError", "Error adding ingredient to Firestore: $e")
         }
     }
 

@@ -114,7 +114,6 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.7")
 
-
     // firebase
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-auth")
@@ -141,6 +140,9 @@ dependencies {
 
     // Reading Environment Files
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
+
+    // MPAndroidChart
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
 
 val exclusions = listOf(

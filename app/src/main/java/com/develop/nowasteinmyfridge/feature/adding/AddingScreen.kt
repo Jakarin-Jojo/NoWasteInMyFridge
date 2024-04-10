@@ -172,15 +172,14 @@ fun AddingScreen(
                             contentScale = ContentScale.Crop,
                         )
                     } else {
-                        if (imageUrl != "" ) {
+                        if (imageUrl != "") {
                             AsyncImage(
                                 model = imageUrl,
                                 contentDescription = "Image for $imageUrl",
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop,
                             )
-                        }
-                        else {
+                        } else {
                             Image(
                                 painter = painterResource(id = R.mipmap.add_photo),
                                 contentDescription = "",

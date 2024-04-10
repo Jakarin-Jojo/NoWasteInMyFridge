@@ -164,12 +164,9 @@ fun SettingScreen(
 ) {
     val menuSettingScreens = listOf(
         MenuSettingScreen.Account,
-        MenuSettingScreen.Setting,
     )
 
     val menuSettingScreens2 = listOf(
-        MenuSettingScreen.Notification,
-        MenuSettingScreen.Password,
         MenuSettingScreen.Grocery,
         MenuSettingScreen.WasteReport,
     )

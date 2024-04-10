@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -73,7 +74,7 @@ fun InventoryScreen(
                 Alignment.BottomCenter
             ) {
                 Text(
-                    text = "Inventory",
+                    text = stringResource(id = R.string.inventory),
                     fontWeight = FontWeight.Bold,
                     fontSize = 30.sp
                 )
@@ -134,95 +135,108 @@ fun InventoryScreen(
                             fontWeight = FontWeight.Bold
                         )
                     },
+
                     text = {
                         Column {
                             Text(
                                 text = "Ingredient: ${ingredientsList[selectedIngredientIndex].name}\n" +
-                                        "Quantity: ${ingredientsList[selectedIngredientIndex].quantity}"
+                                        "Quantity: ${ingredientsList[selectedIngredientIndex].quantity} gram"
                             )
 
                             Spacer(modifier = Modifier.height(16.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Button(
-                                    colors = ButtonDefaults.buttonColors(YellowBtn),
-                                    onClick = {
-                                        showDialog = false
-                                        val initialQuantity =
-                                            ingredientsList[selectedIngredientIndex].quantity
-                                        val updatedQuantity = initialQuantity * 0.75
-                                        inventoryViewModel.updateIngredientQuantity(
-                                            ingredientID = ingredientsList[selectedIngredientIndex].id,
-                                            newQuantity = updatedQuantity.toInt(),
-                                        )
-                                    },
-                                    modifier = Modifier
-                                        .padding(horizontal = 4.dp)
+                            if (!ingredientsList[selectedIngredientIndex].isExpired()) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center
                                 ) {
-                                    Text(text = "25%")
+                                    Button(
+                                        colors = ButtonDefaults.buttonColors(YellowBtn),
+                                        onClick = {
+                                            showDialog = false
+                                            val initialQuantity =
+                                                ingredientsList[selectedIngredientIndex].quantity
+                                            val updatedQuantity = initialQuantity * 0.75
+                                            (initialQuantity - updatedQuantity).toInt()
+                                            inventoryViewModel.updateIngredientQuantity(
+                                                ingredientID = ingredientsList[selectedIngredientIndex].id,
+                                                newQuantity = updatedQuantity.toInt(),
+                                            )
+                                        },
+                                        modifier = Modifier
+                                            .padding(horizontal = 4.dp)
+                                    ) {
+                                        Text(text = "25%")
+                                    }
+                                    Button(
+                                        colors = ButtonDefaults.buttonColors(YellowBtn),
+                                        onClick = {
+                                            showDialog = false
+                                            val initialQuantity =
+                                                ingredientsList[selectedIngredientIndex].quantity
+                                            val updatedQuantity = initialQuantity * 0.5
+                                            (initialQuantity - updatedQuantity).toInt()
+                                            inventoryViewModel.updateIngredientQuantity(
+                                                ingredientID = ingredientsList[selectedIngredientIndex].id,
+                                                newQuantity = updatedQuantity.toInt(),
+                                            )
+                                        },
+                                        modifier = Modifier
+                                            .padding(horizontal = 4.dp)
+                                    ) {
+                                        Text(text = "50%")
+                                    }
                                 }
-                                Button(
-                                    colors = ButtonDefaults.buttonColors(YellowBtn),
-                                    onClick = {
-                                        showDialog = false
-                                        val initialQuantity =
-                                            ingredientsList[selectedIngredientIndex].quantity
-                                        val updatedQuantity = initialQuantity * 0.5
-                                        inventoryViewModel.updateIngredientQuantity(
-                                            ingredientID = ingredientsList[selectedIngredientIndex].id,
-                                            newQuantity = updatedQuantity.toInt(),
-                                        )
-                                    },
-                                    modifier = Modifier
-                                        .padding(horizontal = 4.dp)
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center
                                 ) {
-                                    Text(text = "50%")
+                                    Button(
+                                        colors = ButtonDefaults.buttonColors(YellowBtn),
+                                        onClick = {
+                                            showDialog = false
+                                            val initialQuantity =
+                                                ingredientsList[selectedIngredientIndex].quantity
+                                            val updatedQuantity = initialQuantity * 0.25
+                                            (initialQuantity - updatedQuantity).toInt()
+                                            inventoryViewModel.updateIngredientQuantity(
+                                                ingredientID = ingredientsList[selectedIngredientIndex].id,
+                                                newQuantity = updatedQuantity.toInt(),
+                                            )
+                                        },
+                                        modifier = Modifier
+                                            .padding(horizontal = 4.dp)
+                                    ) {
+                                        Text(text = "75%")
+                                    }
+                                    Button(
+                                        colors = ButtonDefaults.buttonColors(YellowBtn),
+                                        onClick = {
+                                            showDialog = false
+                                            inventoryViewModel.useUpIngredient(
+                                                ingredient = ingredientsList[selectedIngredientIndex],
+                                            )
+                                        },
+                                        modifier = Modifier
+                                            .padding(horizontal = 4.dp)
+                                    ) {
+                                        Text(text = "100%")
+                                    }
                                 }
+                                Spacer(modifier = Modifier.height(16.dp))
+                                TextField(
+                                    value = quantityText,
+                                    onValueChange = { quantityText = it },
+                                    label = { Text("How much that you use?") },
+                                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                                )
+                            } else {
+                                Text(
+                                    text = "Ingredient has expired.",
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                )
                             }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Button(
-                                    colors = ButtonDefaults.buttonColors(YellowBtn),
-                                    onClick = {
-                                        showDialog = false
-                                        val initialQuantity =
-                                            ingredientsList[selectedIngredientIndex].quantity
-                                        val updatedQuantity = initialQuantity * 0.25
-                                        inventoryViewModel.updateIngredientQuantity(
-                                            ingredientID = ingredientsList[selectedIngredientIndex].id,
-                                            newQuantity = updatedQuantity.toInt(),
-                                        )
-                                    },
-                                    modifier = Modifier
-                                        .padding(horizontal = 4.dp)
-                                ) {
-                                    Text(text = "75%")
-                                }
-                                Button(
-                                    colors = ButtonDefaults.buttonColors(YellowBtn),
-                                    onClick = {
-                                        showDialog = false
-                                        inventoryViewModel.deleteIngredient(
-                                            ingredientID = ingredientsList[selectedIngredientIndex].id,
-                                        )
-                                    },
-                                    modifier = Modifier
-                                        .padding(horizontal = 4.dp)
-                                ) {
-                                    Text(text = "100%")
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(16.dp))
-                            TextField(
-                                value = quantityText,
-                                onValueChange = { quantityText = it },
-                                label = { Text("How much that you use?") },
-                                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-                            )
                             Spacer(modifier = Modifier.height(32.dp))
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -238,21 +252,31 @@ fun InventoryScreen(
                                 ) {
                                     Text(text = "Delete")
                                 }
-                                Button(
-                                    onClick = {
-                                        showDialog = false
-                                        val initialQuantity =
-                                            ingredientsList[selectedIngredientIndex].quantity
-                                        val newQuantity =
-                                            (initialQuantity - quantityText.text.toIntOrNull()!!)
-                                        inventoryViewModel.updateIngredientQuantity(
-                                            ingredientsList[selectedIngredientIndex].id,
-                                            newQuantity
-                                        )
-                                    },
-                                    modifier = Modifier.padding(horizontal = 6.dp)
-                                ) {
-                                    Text(text = "Update")
+                                if (!ingredientsList[selectedIngredientIndex].isExpired()) {
+                                    Button(
+                                        onClick = {
+                                            showDialog = false
+                                            val initialQuantity =
+                                                ingredientsList[selectedIngredientIndex].quantity
+                                            val newQuantity =
+                                                (initialQuantity - quantityText.text.toIntOrNull()!!)
+                                            (initialQuantity - newQuantity)
+                                            if (initialQuantity == newQuantity) {
+                                                inventoryViewModel.useUpIngredient(ingredientsList[selectedIngredientIndex])
+                                            } else {
+                                                inventoryViewModel.updateIngredientQuantity(
+                                                    ingredientID = ingredientsList[selectedIngredientIndex].id,
+                                                    newQuantity = newQuantity,
+                                                )
+                                            }
+                                        },
+                                        enabled = (quantityText.text.toIntOrNull()
+                                            ?: 0) <= ingredientsList[selectedIngredientIndex].quantity,
+                                        modifier = Modifier.padding(horizontal = 6.dp)
+                                    ) {
+                                        Text(text = "Use")
+                                    }
+
                                 }
                             }
                         }

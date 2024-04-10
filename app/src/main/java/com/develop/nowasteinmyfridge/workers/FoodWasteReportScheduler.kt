@@ -13,24 +13,28 @@ import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ExpirationCheckScheduler @Inject constructor(
+class FoodWasteReportScheduler @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
-
-    fun scheduleDailyCheck() {
-        val workRequest = buildDailyCheckWorkRequest()
-        Log.e("ExpirationCheckScheduler", "ExpirationCheckScheduler is working")
+    fun scheduleWeeklyReport() {
+        val workRequest = buildWeeklyCheckWorkRequest()
+        Log.e("FoodWasteReportScheduler", "FoodWasteReportScheduler is working")
         enqueuePeriodicWorkRequest(workRequest)
     }
 
-    private fun buildDailyCheckWorkRequest(): PeriodicWorkRequest {
+    private fun buildWeeklyCheckWorkRequest(): PeriodicWorkRequest {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        return PeriodicWorkRequestBuilder<ExpiryCheckWorker>(1, TimeUnit.DAYS)
+        // Schedule the work to repeat every day at 11:30 PM
+        return PeriodicWorkRequestBuilder<FoodWasteReportWorker>(
+            repeatInterval = 7, // repeat every 7 days
+            repeatIntervalTimeUnit = TimeUnit.DAYS
+        )
             .setConstraints(constraints)
             .setInitialDelay(calculateInitialDelay(), TimeUnit.MILLISECONDS)
+            .addTag(FoodWasteReportWorker.TAG)
             .build()
     }
 
@@ -38,8 +42,7 @@ class ExpirationCheckScheduler @Inject constructor(
         val currentTimeMillis = System.currentTimeMillis()
         val targetTimeMillis = getTargetTimeMillis()
         return if (targetTimeMillis <= currentTimeMillis) {
-            // If the target time has already passed for today, schedule it for the next day
-            targetTimeMillis + TimeUnit.DAYS.toMillis(1) - currentTimeMillis
+            targetTimeMillis + 7 * 24 * 60 * 60 * 1000 - currentTimeMillis
         } else {
             targetTimeMillis - currentTimeMillis
         }
@@ -47,23 +50,23 @@ class ExpirationCheckScheduler @Inject constructor(
 
     private fun getTargetTimeMillis(): Long {
         val calendar = Calendar.getInstance()
-        calendar.set(Calendar.HOUR_OF_DAY, 9)
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY)
+        calendar.set(Calendar.HOUR_OF_DAY, 10)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
         return calendar.timeInMillis
     }
 
     private fun enqueuePeriodicWorkRequest(workRequest: PeriodicWorkRequest) {
         try {
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                "ExpiryCheckWorker",
+                "FoodWasteReportWorker",
                 ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
                 workRequest,
             )
-            Log.d("ExpirationCheckScheduler", "Daily check scheduled successfully")
+            Log.d("FoodWasteReportScheduler", "FoodWaste Report successfully")
         } catch (e: Exception) {
-            Log.e("ExpirationCheckScheduler", "Error scheduling daily check: ${e.message}")
+            Log.e("FoodWasteReportScheduler", "Error Report FoodWaste weekly : ${e.message}")
             e.printStackTrace()
         }
     }
