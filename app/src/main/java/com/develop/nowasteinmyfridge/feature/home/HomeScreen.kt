@@ -80,10 +80,12 @@ fun HomeScreen(
 ) {
     val userInfoState by accountViewModel.userProfileInfoState.collectAsState()
     val ingredientsList by inventoryViewModel.ingredientsState
-    val displayedIngredients = ingredientsList.map { ingredient ->
-        ingredient.name to ingredient.image
-    }
-    var numberofingredients by remember { mutableStateOf(3) }
+    val displayedIngredients = ingredientsList
+        .filter { ingredient -> !ingredient.isAddFromBarcode }
+        .map { ingredient ->
+            ingredient.name to ingredient.image
+        }
+    var numberofingredients by remember { mutableIntStateOf(3) }
     val names = displayedIngredients.map { it.first }
     val images = displayedIngredients.map { it.second }
     var foundState by remember { mutableStateOf(false) }

@@ -12,6 +12,7 @@ data class Ingredient(
     val mfg:String ="",
     val efd:String ="",
     val isInFreezer: Boolean = false,
+    val isAddFromBarcode: Boolean = false,
 ){
     fun isExpired(): Boolean {
         val dateFormat = SimpleDateFormat("yy-MM-dd", Locale.getDefault())

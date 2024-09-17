@@ -6,5 +6,6 @@ data class IngredientCreate(
     val image: Any,
     val mfg: String = "",
     val efd: String = "",
-    val inFreeze: Boolean = false
+    val isInFreeze: Boolean = false,
+    val isAddFromBarcode: Boolean = false,
 )

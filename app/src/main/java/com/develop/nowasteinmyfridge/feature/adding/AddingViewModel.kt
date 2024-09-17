@@ -9,7 +9,6 @@ import com.develop.nowasteinmyfridge.domain.AddIngredientUseCase
 import com.develop.nowasteinmyfridge.domain.GetIngredientByBarcodeUseCase
 import com.develop.nowasteinmyfridge.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,6 +40,10 @@ class AddingViewModel @Inject constructor(
     val getIngredientByBarcodeResult: StateFlow<Result<Unit>?>
         get() = _getIngredientByBarcodeResult
 
+    private val _isAddFromBarcode = MutableStateFlow(false)
+    val isAddFromBarcode :StateFlow<Boolean>
+        get() = _isAddFromBarcode
+
     fun getIngredientByBarcode(barcode: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -52,6 +55,7 @@ class AddingViewModel @Inject constructor(
                 val imageUrl = result.product.image_url
                 _imageUrl.value = imageUrl
                 _isFoundProduct.value = result.status
+                _isAddFromBarcode.value = true
                 _getIngredientByBarcodeResult.value = Result.Success(Unit)
                 Log.d("AddingViewModel", "Brands: $brands")
             } catch (e: Exception) {

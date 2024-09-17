@@ -110,7 +110,7 @@ fun AddingScreen(
             brands?.let { TextFieldValue(it) } ?: TextFieldValue()
         )
     }
-
+    val isAddFromBarcode by addingViewModel.isAddFromBarcode.collectAsStateWithLifecycle()
     val useNameInsteadOfScanName = scanName.text.isEmpty()
     LaunchedEffect(brands) {
         brandsName = brands ?: ""
@@ -376,7 +376,8 @@ fun AddingScreen(
                                                 },
                                                 mfg = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(mfgDate.time),
                                                 efd = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(efdDate.time),
-                                                inFreeze = isChecked,
+                                                isInFreeze = isChecked,
+                                                isAddFromBarcode = isAddFromBarcode,
                                             )
                                         )
                                     },

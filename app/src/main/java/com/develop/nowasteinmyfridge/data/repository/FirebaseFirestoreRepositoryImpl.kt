@@ -199,7 +199,8 @@ class FirebaseFirestoreRepositoryImpl @Inject constructor(
                         image = imageUrl,
                         mfg = ingredient.mfg,
                         efd = ingredient.efd,
-                        isInFreezer = ingredient.inFreeze,
+                        isInFreezer = ingredient.isInFreeze,
+                        isAddFromBarcode = ingredient.isAddFromBarcode,
                     )
                     db.collection("users/$userEmail/ingredients").document(ingredientId)
                         .set(newIngredient)
@@ -216,7 +217,8 @@ class FirebaseFirestoreRepositoryImpl @Inject constructor(
                     image = ingredient.image,
                     mfg = ingredient.mfg,
                     efd = ingredient.efd,
-                    isInFreezer = ingredient.inFreeze,
+                    isInFreezer = ingredient.isInFreeze,
+                    isAddFromBarcode = ingredient.isAddFromBarcode,
                 )
                 db.collection("users/$userEmail/ingredients").document(ingredientId)
                     .set(newIngredient)
