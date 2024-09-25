@@ -12,13 +12,13 @@ fun NavGraphBuilder.authNavGraph(
     navHostController: NavHostController,
 ) {
     navigation(
-        startDestination = Screen.LoginScreen.route,
+        startDestination = Screen.LoginScreenRoute.route,
         route = AUTH_GRAPH_ROUTE,
     ) {
-        composable(route = Screen.LoginScreen.route) {
+        composable(route = Screen.LoginScreenRoute.route) {
             LoginScreen(navController = navHostController)
         }
-        composable(route = Screen.SignUpScreen.route) {
+        composable(route = Screen.SignUpScreenRoute.route) {
             SignupScreen(navController = navHostController)
         }
     }

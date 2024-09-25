@@ -1,6 +1,5 @@
 package com.develop.nowasteinmyfridge
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -14,23 +13,26 @@ import com.develop.nowasteinmyfridge.feature.inventory.InventoryScreen
 import com.develop.nowasteinmyfridge.feature.setting.navigation.settingNavGraph
 
 const val MAIN_GRAPH_ROUTE = "main"
-const val MENU_SCREEN_ROUTE = "menu/{name}/{image}?ingredients={ingredients}&calories={calories}&totalTime={totalTime}&mealType={mealType}&dishType={dishType}"
+const val MENU_SCREEN_ROUTE =
+    "menu/{name}/{image}?ingredients={ingredients}&calories={calories}&totalTime={totalTime}&mealType={mealType}&dishType={dishType}"
 const val BACK_TO_APP_ROUTE = "back_to_app"
 
 @Composable
-fun BottomNavGraph(navController: NavHostController) {
+fun BottomNavGraph(
+    navController: NavHostController,
+) {
     NavHost(
         navController = navController,
         route = MAIN_GRAPH_ROUTE,
-        startDestination = BottomBarScreen.Home.route,
+        startDestination = BottomBarItem.Home.route,
     ) {
-        composable(route = BottomBarScreen.Home.route) {
+        composable(route = BottomBarItem.Home.route) {
             HomeScreen(navController = navController)
         }
-        composable(route = BottomBarScreen.Inventory.route) {
+        composable(route = BottomBarItem.Inventory.route) {
             InventoryScreen()
         }
-        composable(route = BottomBarScreen.Adding.route) {
+        composable(route = BottomBarItem.Adding.route) {
             AddingScreen(navController)
         }
         settingNavGraph(navController)
@@ -55,15 +57,21 @@ fun BottomNavGraph(navController: NavHostController) {
             val mealType = backStackEntry.arguments?.getString("mealType")
             val dishType = backStackEntry.arguments?.getString("dishType")
 
-            Log.d("koko", "$ingredientsString")
-
             if (name != null && image != null) {
-                MenuScreen(name = name, image = image, ingredientList = ingredients, time = time, calories = calories, mealType = mealType ?: "", dishType = dishType ?: "")
+                MenuScreen(
+                    name = name,
+                    image = image,
+                    ingredientList = ingredients,
+                    time = time,
+                    calories = calories,
+                    mealType = mealType ?: "",
+                    dishType = dishType ?: "",
+                )
             }
         }
-
         composable(route = BACK_TO_APP_ROUTE) {
             AppNavHost()
         }
+
     }
 }

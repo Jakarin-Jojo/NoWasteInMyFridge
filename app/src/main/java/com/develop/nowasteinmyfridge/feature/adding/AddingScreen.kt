@@ -46,7 +46,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -69,7 +68,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
-import com.develop.nowasteinmyfridge.BottomBarScreen
+import com.develop.nowasteinmyfridge.BottomBarItem
 import com.develop.nowasteinmyfridge.R
 import com.develop.nowasteinmyfridge.data.model.IngredientCreate
 import com.develop.nowasteinmyfridge.ui.theme.BaseColor
@@ -228,13 +227,24 @@ fun AddingScreen(
                                 }
                             )
                         }
-                        Text(
-                            text = stringResource(id = R.string.inventory_info),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = GrayPrimary,
-                            modifier = Modifier.padding(start = 14.dp)
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.inventory_info),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = GrayPrimary,
+                            )
+                            Text(
+                                text = stringResource(id = R.string.is_in_freezer),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = GrayPrimary,
+                            )
+                        }
+
 
                         Text(
                             text = stringResource(id = R.string.ingredient_name),
@@ -374,8 +384,14 @@ fun AddingScreen(
                                                 image = imageUrl.ifEmpty {
                                                     selectImageUri ?: ""
                                                 },
-                                                mfg = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(mfgDate.time),
-                                                efd = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(efdDate.time),
+                                                mfg = SimpleDateFormat(
+                                                    "yyyy-MM-dd",
+                                                    Locale.getDefault()
+                                                ).format(mfgDate.time),
+                                                efd = SimpleDateFormat(
+                                                    "yyyy-MM-dd",
+                                                    Locale.getDefault()
+                                                ).format(efdDate.time),
                                                 isInFreeze = isChecked,
                                                 isAddFromBarcode = isAddFromBarcode,
                                             )
@@ -394,7 +410,7 @@ fun AddingScreen(
                             }
                             if (addIngredientResult is Result.Success) {
                                 Toast.makeText(context, "Adding Success", Toast.LENGTH_SHORT).show()
-                                navController.navigate(BottomBarScreen.Inventory.route)
+                                navController.navigate(BottomBarItem.Inventory.route)
                             } else if (addIngredientResult is Result.Error) {
                                 val error = (addIngredientResult as Result.Error).exception
                                 Toast.makeText(
@@ -427,7 +443,6 @@ fun AddingScreen(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputFieldWithPlaceholder(
     placeholder: String,
@@ -481,7 +496,6 @@ fun InputFieldWithPlaceholder(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputFieldWithPlaceholderWithBorder(
     placeholder: String,

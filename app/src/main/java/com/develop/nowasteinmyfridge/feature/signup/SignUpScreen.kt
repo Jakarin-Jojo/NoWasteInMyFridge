@@ -13,12 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Cake
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Male
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -176,7 +176,10 @@ fun SignupScreen(
                             .padding(vertical = 16.dp)
                             .height(48.dp),
                     ) {
-                        Icon(imageVector = Icons.Default.Send, contentDescription = null)
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Send,
+                            contentDescription = null
+                        )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(text = stringResource(id = R.string.btn_signup))
                     }
@@ -186,7 +189,7 @@ fun SignupScreen(
         }
         if (state is Result.Success) {
             Toast.makeText(context, "Sign up Success", Toast.LENGTH_SHORT).show()
-            navController.navigate(Screen.LoginScreen.route)
+            navController.navigate(Screen.LoginScreenRoute.route)
         } else if (state is Result.Error) {
             val errorMessage = (state as Result.Error).exception.message
             Toast.makeText(context, "Error: $errorMessage", Toast.LENGTH_SHORT).show()

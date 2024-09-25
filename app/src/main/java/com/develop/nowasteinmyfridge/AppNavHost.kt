@@ -6,8 +6,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 const val APP_GRAPH_ROUTE = "app"
+
 @Composable
-fun AppNavHost(startDestination: String = AUTH_GRAPH_ROUTE) {
+fun AppNavHost(
+    startDestination: String = AUTH_GRAPH_ROUTE,
+) {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -20,3 +23,5 @@ fun AppNavHost(startDestination: String = AUTH_GRAPH_ROUTE) {
         }
     }
 }
+
+

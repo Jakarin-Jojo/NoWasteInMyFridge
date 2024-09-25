@@ -36,7 +36,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -62,7 +61,6 @@ import com.develop.nowasteinmyfridge.Screen
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LoginScreen(
@@ -105,7 +103,6 @@ fun LoginScreen(
                 fontSize = 36.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
-//                    .padding(top = 60.dp)
                     .fillMaxWidth()
                     .wrapContentSize(Alignment.Center)
             )
@@ -158,7 +155,7 @@ fun LoginScreen(
                 ) {
                     CircularProgressIndicator()
                 }
-            } else  {
+            } else {
                 Button(
                     onClick = {
                         viewModel.loginUser(
@@ -176,7 +173,7 @@ fun LoginScreen(
             }
             Text(text = stringResource(id = R.string.need_sign_in),
                 modifier = Modifier.clickable {
-                    navController.navigate(Screen.SignUpScreen.route)
+                    navController.navigate(Screen.SignUpScreenRoute.route)
                 })
             Box(
                 modifier = Modifier

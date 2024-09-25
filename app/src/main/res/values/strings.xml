@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">NoWasteInMyFridge</string>
-    <string name="welcome_message">Hi</string>
+    <string name="welcome_message">Welcome</string>
     <string name="ingredient">Ingredient</string>
     <string name="label_suggest_menu">Today Option</string>
     <string name="no_suggest_menu">No suggested menu is available today</string>
@@ -34,6 +34,7 @@
     <string name="take_photo">Take Photo</string>
     <string name="import_image_ingredient">Import Image</string>
     <string name="suggest_date">Suggest date</string>
+    <string name="is_in_freezer">Put it in the freezer?</string>
 
     <string name="label_name_user_profile">Name</string>
     <string name="label_first_name_user_profile">First Name</string>

@@ -81,10 +81,9 @@ fun AccountScreen(
             UserProfileHeader(imageProfile = painter)
             Spacer(modifier = Modifier.height(16.dp))
             UserProfileContent(userProfile = userProfile)
-            // Logout button
             OutlinedButton(
                 onClick = {
-                    accountViewModel.logout()// Logout logic
+                    accountViewModel.logout()
                     navController.navigate(BACK_TO_APP_ROUTE)
                 },
                 modifier = Modifier.fillMaxWidth(),
